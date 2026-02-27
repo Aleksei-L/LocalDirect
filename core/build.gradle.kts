@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.lacaldirect.core"
+    namespace = "com.localdirect.core"
     compileSdk {
         version = release(36)
     }

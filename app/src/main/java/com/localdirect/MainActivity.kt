@@ -7,12 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.lacaldirect.core.safetyLaunch
+import com.localdirect.core.safetyLaunch
 import com.localdirect.ui.LocalDirectTheme
 import com.localdirect.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,10 +34,9 @@ class MainActivity : ComponentActivity() {
             val ipAddresses by vm.ipAddresses.collectAsState()
             LocalDirectTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Text(
-                        text = ipAddresses,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    LazyColumn(modifier = Modifier.padding(innerPadding)) {
+
+                    }
                 }
             }
         }

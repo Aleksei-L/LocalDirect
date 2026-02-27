@@ -1,4 +1,4 @@
-package com.lacaldirect.core
+package com.localdirect.core
 
 import android.content.Context
 import android.net.ConnectivityManager

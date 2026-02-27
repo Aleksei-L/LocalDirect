@@ -1,4 +1,4 @@
-package com.lacaldirect.core
+package com.localdirect.core
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
