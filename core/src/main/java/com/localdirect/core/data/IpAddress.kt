@@ -45,8 +45,7 @@ class IpAddress(
         }
     }
 
-    fun getLocalAddresses(/*lanIp: ByteArray, mask: ByteArray*/): List<UByteArray> {
-        //val index = mask.indexOfFirst { it == 0.toByte() }
+    fun getLocalAddresses(): List<UByteArray> {
         if (mask == 0.toUByte() || mask == 31.toUByte()) {
             Timber.e("Incorrect subnet mask")
             return emptyList()

@@ -5,15 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.localdirect.core.safetyLaunch
 import com.localdirect.ui.LocalDirectTheme
+import com.localdirect.ui.navigation.Main
+import com.localdirect.ui.navigation.Settings
+import com.localdirect.ui.screen.MainScreen
+import com.localdirect.ui.screen.SettingsScreen
 import com.localdirect.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -33,10 +35,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val ipAddresses by vm.ipAddresses.collectAsState()
             LocalDirectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LazyColumn(modifier = Modifier.padding(innerPadding)) {
-
-                    }
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = Main
+                ) {
+                    composable<Main> { MainScreen(navController = navController) }
+                    composable<Settings> { SettingsScreen(navController = navController) }
                 }
             }
         }
