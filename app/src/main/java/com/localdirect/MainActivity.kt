@@ -36,11 +36,12 @@ class MainActivity : ComponentActivity() {
                     startDestination = Main
                 ) {
                     composable<Main> {
-                        MainScreen(onSettingsButtonClick = {
-                            navController.navigate(
-                                Settings
-                            )
-                        })
+                        MainScreen(
+                            uiStateFlow = vm.uiStateRepository.uiStateFlow,
+                            onSettingsButtonClick = {
+                                navController.navigate(Settings)
+                            }
+                        )
                     }
                     composable<Settings> {
                         SettingsScreen(onBackButtonClick = {

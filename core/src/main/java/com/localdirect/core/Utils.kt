@@ -12,12 +12,12 @@ fun CoroutineScope.safetyLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
-) {
+) = launch(context, start) {
     try {
-        this.launch(context, start, block)
+        block()
     } catch (e: CancellationException) {
-        Timber.w("Coroutine with context ${this.coroutineContext} was cancelled: $e")
+        Timber.w("Coroutine in context $coroutineContext was cancelled: $e")
     } catch (e: Exception) {
-        Timber.e("Something went wrong with coroutine in context ${this.coroutineContext}: $e")
+        Timber.e("Something went wrong with coroutine in context $coroutineContext: $e")
     }
 }

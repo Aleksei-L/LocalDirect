@@ -3,6 +3,7 @@ package com.localdirect.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.localdirect.core.NetworkStateRepository
+import com.localdirect.core.UiStateRepository
 import com.localdirect.core.data.IpAddress
 import com.localdirect.core.safetyLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val networkStateRepository: NetworkStateRepository
+    private val networkStateRepository: NetworkStateRepository,
+    val uiStateRepository: UiStateRepository
 ) : ViewModel() {
     private val mIpAddresses = MutableStateFlow(IpAddress("0.0.0.0/0"))
     val ipAddresses = mIpAddresses.asStateFlow()
@@ -34,5 +36,9 @@ class MainViewModel @Inject constructor(
                     )
             }
         }
+    }
+
+    private fun handleUiState() = viewModelScope.safetyLaunch {
+
     }
 }
