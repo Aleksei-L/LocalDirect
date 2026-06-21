@@ -11,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,8 +40,6 @@ class NetworkStateRepository @Inject constructor(
         ) {
             super.onCapabilitiesChanged(network, networkCapabilities)
             Timber.i("Network capability changed: $network, $networkCapabilities")
-            val unmetered =
-                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
         }
 
         override fun onLost(network: Network) {
@@ -53,7 +50,7 @@ class NetworkStateRepository @Inject constructor(
         override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
             super.onLinkPropertiesChanged(network, linkProperties)
             Timber.i("Network link properties changed: $network, $linkProperties")
-            coroutineScope.launch {
+            coroutineScope.safetyLaunch {
                 mNetworkStateFlow.emit(linkProperties)
             }
         }
