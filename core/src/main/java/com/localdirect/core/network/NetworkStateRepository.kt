@@ -1,4 +1,4 @@
-package com.localdirect.core
+package com.localdirect.core.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,20 +6,17 @@ import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.localdirect.core.safetyLaunch
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import javax.inject.Inject
 
 class NetworkStateRepository @Inject constructor(
-    @ApplicationContext appContext: Context
+    appContext: Context,
+    coroutineScope: CoroutineScope
 ) {
-    //todo exclude to shared module
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     private val mNetworkStateFlow = MutableStateFlow(LinkProperties())
     val networkStateFlow = mNetworkStateFlow.asStateFlow()
 

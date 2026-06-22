@@ -3,12 +3,15 @@ package com.localdirect.ui.screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localdirect.core.UiState
+import com.localdirect.core.data.IpAddress
 import com.localdirect.ui.components.LocalDirectAppBar
 import kotlinx.coroutines.flow.StateFlow
 
@@ -16,15 +19,35 @@ import kotlinx.coroutines.flow.StateFlow
 fun MainScreen(
     modifier: Modifier = Modifier,
     uiStateFlow: StateFlow<UiState>,
-    onSettingsButtonClick: () -> Unit
+    serverIpFlow: StateFlow<IpAddress>,
+    onSettingsButtonClick: () -> Unit,
 ) {
-    val uiState = uiStateFlow.collectAsState()
+    val uiState by uiStateFlow.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { LocalDirectAppBar(onSettingsButtonClick = onSettingsButtonClick) }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            Text("This is main")
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            when (uiState) {
+                UiState.IDLE -> {
+                    Text(text = "There is no connection")
+                }
+
+                UiState.SEARCHING -> {
+                    Text(text = "Searching for server...")
+                    CircularProgressIndicator()
+                }
+
+                UiState.CONNECTED -> {
+                    val ipAddress by serverIpFlow.collectAsStateWithLifecycle()
+                    Text(text = "Connected with $ipAddress")
+                }
+            }
         }
     }
 }

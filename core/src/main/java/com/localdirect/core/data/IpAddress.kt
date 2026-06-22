@@ -5,8 +5,16 @@ import kotlin.math.pow
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class IpAddress(
-    val stringIpAddress: String
+    /**
+     * String with IP address and subnet mask
+     */
+    val stringIpAddressWithMask: String
 ) {
+    /**
+     * String with only IP address without subnet mask
+     */
+    val stringIpAddress = stringIpAddressWithMask.substringBefore('/')
+
     /**
      * Ip address in octets form
      *
@@ -28,7 +36,7 @@ class IpAddress(
         private set
 
     init {
-        var ipOctets = stringIpAddress.split('.', '/')
+        var ipOctets = stringIpAddressWithMask.split('.', '/')
         mask = ipOctets.last().toUByte()
         ipOctets = ipOctets.dropLast(1)
 
@@ -45,13 +53,13 @@ class IpAddress(
         }
     }
 
-    fun getLocalAddresses(): List<UByteArray> {
+    fun getLocalAddresses(): List<IpAddress> {
         if (mask == 0.toUByte() || mask == 31.toUByte()) {
             Timber.e("Incorrect subnet mask")
             return emptyList()
         }
 
-        val list = mutableListOf<UByteArray>()
+        val list = mutableListOf<IpAddress>()
         val globalNetworkPart = ipAddress.sliceArray(0..<mask.toByte())
         val localNetworkPart = ipAddress.sliceArray(mask.toByte()..31)
         val localNetworkPartSize = localNetworkPart.size
@@ -62,7 +70,8 @@ class IpAddress(
                 .makeNBitLength(localNetworkPartSize)
                 .createUByteArray()
 
-            list.add(globalNetworkPart + array)
+            val resultArray = globalNetworkPart + array
+            list.add(IpAddress("${resultArray.toIpString()}/$mask"))
         }
 
         return list
@@ -79,10 +88,41 @@ class IpAddress(
         return array
     }
 
+    private fun UByteArray.toIpString(): String {
+        var tmpString = ""
+        var res = ""
+
+        for (i in 0..7)
+            tmpString += this[i]
+        res += "${tmpString.toInt(2)}."
+        tmpString = ""
+
+        for (i in 8..15)
+            tmpString += this[i]
+        res += "${tmpString.toInt(2)}."
+        tmpString = ""
+
+        for (i in 16..23)
+            tmpString += this[i]
+        res += "${tmpString.toInt(2)}."
+        tmpString = ""
+
+        for (i in 24..31)
+            tmpString += this[i]
+
+        return "$res${tmpString.toInt(2)}"
+    }
+
     private fun String.makeNBitLength(n: Int): String {
         var newString = this
         while (newString.length < n)
             newString = "0$newString"
         return newString
+    }
+
+    override fun toString(): String = stringIpAddressWithMask
+
+    companion object {
+        val Init = IpAddress("0.0.0.0/0")
     }
 }

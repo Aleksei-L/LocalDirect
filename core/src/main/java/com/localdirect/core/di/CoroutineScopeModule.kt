@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,5 +16,5 @@ internal class CoroutineScopeModule {
     @Singleton
     @Provides
     fun provideCoroutineScope(): CoroutineScope =
-        CoroutineScope(Job() + Dispatchers.IO)
+        CoroutineScope(CoroutineName("CoreModuleCoroutine") + Job() + Dispatchers.IO)
 }

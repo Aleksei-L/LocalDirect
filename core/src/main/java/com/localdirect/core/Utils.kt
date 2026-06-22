@@ -11,13 +11,18 @@ import kotlin.coroutines.EmptyCoroutineContext
 fun CoroutineScope.safetyLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
+    logging: Boolean = true,
     block: suspend CoroutineScope.() -> Unit
 ) = launch(context, start) {
     try {
         block()
     } catch (e: CancellationException) {
-        Timber.w("Coroutine in context $coroutineContext was cancelled: $e")
+        if (logging)
+            Timber.w("Coroutine in context $coroutineContext was cancelled: $e")
     } catch (e: Exception) {
-        Timber.e("Something went wrong with coroutine in context $coroutineContext: $e")
+        if (logging) {
+            Timber.e("Something went wrong with coroutine in context $coroutineContext: $e")
+            Timber.e(e.stackTraceToString())
+        }
     }
 }

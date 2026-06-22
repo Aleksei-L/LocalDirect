@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.localdirect.core.safetyLaunch
 import com.localdirect.ui.LocalDirectTheme
 import com.localdirect.ui.navigation.Main
 import com.localdirect.ui.navigation.Settings
@@ -16,10 +15,6 @@ import com.localdirect.ui.screen.MainScreen
 import com.localdirect.ui.screen.SettingsScreen
 import com.localdirect.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import timber.log.Timber
-import java.net.Socket
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -37,7 +32,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable<Main> {
                         MainScreen(
-                            uiStateFlow = vm.uiStateRepository.uiStateFlow,
+                            uiStateFlow = vm.uiStateFlow,
+                            serverIpFlow = vm.serverIp,
                             onSettingsButtonClick = {
                                 navController.navigate(Settings)
                             }
@@ -51,21 +47,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        sendData()
-    }
-
-    private fun sendData() {
-        CoroutineScope(Dispatchers.IO).safetyLaunch {
-            val socket = Socket("192.168.0.100", 3316)
-            socket.getOutputStream().write(LOCALDIRECT_HANDSHAKE.toByteArray(Charsets.US_ASCII))
-
-            val input = socket.getInputStream()
-            val data = input.readBytes().toString(Charsets.US_ASCII)
-
-            Timber.e(data)
-        }
     }
 }
-
-const val LOCALDIRECT_HANDSHAKE = "com.localdirect.handshake"

@@ -1,44 +1,15 @@
 package com.localdirect.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.localdirect.core.NetworkStateRepository
 import com.localdirect.core.UiStateRepository
-import com.localdirect.core.data.IpAddress
-import com.localdirect.core.safetyLaunch
+import com.localdirect.core.network.NetworkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val networkStateRepository: NetworkStateRepository,
-    val uiStateRepository: UiStateRepository
+    networkManager: NetworkManager
 ) : ViewModel() {
-    private val mIpAddresses = MutableStateFlow(IpAddress("0.0.0.0/0"))
-    val ipAddresses = mIpAddresses.asStateFlow()
-
-    init {
-        handleNetworkState()
-    }
-
-    private fun handleNetworkState() = viewModelScope.safetyLaunch {
-        networkStateRepository.networkStateFlow.collect { networkState ->
-            val allAddresses = networkState.linkAddresses
-            for (address in allAddresses) {
-                val ip = address.address.toString()
-                if (!ip.contains(':'))
-                    mIpAddresses.emit(
-                        IpAddress(
-                            "${ip.substringAfter('/')}/${address.prefixLength}"
-                        )
-                    )
-            }
-        }
-    }
-
-    private fun handleUiState() = viewModelScope.safetyLaunch {
-
-    }
+    val uiStateFlow = UiStateRepository.uiStateFlow
+    val serverIp = networkManager.serverIp
 }
