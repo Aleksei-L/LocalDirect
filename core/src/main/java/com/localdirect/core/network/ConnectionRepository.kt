@@ -5,11 +5,15 @@ import com.localdirect.core.UiStateRepository
 import com.localdirect.core.data.IpAddress
 import com.localdirect.core.safetyLaunch
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import timber.log.Timber
+import java.io.OutputStream
 import java.net.InetAddress
 import java.net.Socket
 import javax.inject.Inject
@@ -21,10 +25,15 @@ class ConnectionRepository @Inject constructor(
     private val mServerIp = MutableStateFlow(IpAddress.Init)
     val serverIp = mServerIp.asStateFlow()
 
+    private val buffer = ByteArray(256)
+
     lateinit var socket: Socket
+    lateinit var outputStream: OutputStream
+
+    var readingJob: Job? = null
 
     fun handleConnectionWithServer(ipAddressesFlow: StateFlow<IpAddress>) {
-        coroutineScope.safetyLaunch {
+        readingJob = coroutineScope.safetyLaunch {
             readFromSocket()
         }
         coroutineScope.safetyLaunch {
@@ -46,33 +55,34 @@ class ConnectionRepository @Inject constructor(
 
     private fun sendHandshake(ipAddress: IpAddress) {
         socket = Socket(ipAddress.stringIpAddress, LOCALDIRECT_PORT)
+        outputStream = socket.getOutputStream()
         Timber.i("Opened connection with $ipAddress")
 
-        socket.getOutputStream().write(
-            LOCALDIRECT_HANDSHAKE.toByteArray(Charsets.US_ASCII),
+        outputStream.write(
+            ClientConst.LOCALDIRECT_HANDSHAKE.toByteArray(Charsets.US_ASCII),
             0,
-            LOCALDIRECT_HANDSHAKE.length
+            ClientConst.LOCALDIRECT_HANDSHAKE.length
         )
     }
 
     private suspend fun readFromSocket() {
-        while (true) {
+        while (currentCoroutineContext().isActive) {
             if (::socket.isInitialized) {
                 val input = socket.getInputStream()
-                val data = ByteArray(LOCALDIRECT_ACCEPT.length)
+                input.read(buffer)
+                val receivedData = handleSocketMessage(buffer)
+                buffer.fill(0)
 
-                input.read(
-                    data,
-                    0,
-                    LOCALDIRECT_ACCEPT.length
-                )
-
-                val receivedData = data.toString(Charsets.US_ASCII)
-                if (receivedData == LOCALDIRECT_ACCEPT) {
+                if (receivedData == ServerConsts.LOCALDIRECT_ACCEPT) {
                     Timber.i("Received ACCEPT from server ${socket.inetAddress.toIp()}")
                     coroutineScope.safetyLaunch {
                         establishConnection()
                     }
+                } else if (receivedData == ServerConsts.LOCALDIRECT_TERMINAL) {
+                    Timber.e("Server terminaled")
+                    UiStateRepository.emitUiState(UiState.IDLE)
+                    readingJob?.cancel()
+                    socket.close()
                 }
             } else {
                 delay(1.seconds)
@@ -80,11 +90,15 @@ class ConnectionRepository @Inject constructor(
         }
     }
 
+    private fun handleSocketMessage(buffer: ByteArray): String =
+        buffer.sliceArray(0..<(buffer.indexOfFirst { it == 0.toByte() }))
+            .toString(Charsets.US_ASCII)
+
     private fun establishConnection() {
-        socket.getOutputStream().write(
-            LOCALDIRECT_ESTABLISH.toByteArray(Charsets.US_ASCII),
+        outputStream.write(
+            ClientConst.LOCALDIRECT_ESTABLISH.toByteArray(Charsets.US_ASCII),
             0,
-            LOCALDIRECT_ESTABLISH.length
+            ClientConst.LOCALDIRECT_ESTABLISH.length
         )
         mServerIp.value = IpAddress(
             "${socket.inetAddress.toIp()}/0" //todo

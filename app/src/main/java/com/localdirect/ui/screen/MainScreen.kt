@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localdirect.core.UiState
 import com.localdirect.core.data.IpAddress
 import com.localdirect.ui.components.LocalDirectAppBar
+import com.localdirect.ui.components.MainScreenIdle
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -35,7 +36,7 @@ fun MainScreen(
         ) {
             when (uiState) {
                 UiState.IDLE -> {
-                    Text(text = "There is no connection")
+                    MainScreenIdle(onSearchingServerButtonClick = {}) //todo
                 }
 
                 UiState.SEARCHING -> {

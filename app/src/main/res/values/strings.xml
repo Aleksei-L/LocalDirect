@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Local Direct</string>
+
+    <!-- Main screen - IDLE state -->
+    <string name="search_server_button">Search for a server</string>
 </resources>

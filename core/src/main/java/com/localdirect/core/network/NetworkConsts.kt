@@ -2,11 +2,20 @@ package com.localdirect.core.network
 
 const val LOCALDIRECT_PORT = 3316
 
-//only client sending
-const val LOCALDIRECT_HANDSHAKE = "com.localdirect.handshake"
+/**
+ * Constants that only sending from client to server
+ */
+object ClientConst {
+    const val LOCALDIRECT_HANDSHAKE = "com.localdirect.handshake"
+    const val LOCALDIRECT_ESTABLISH = "com.localdirect.establish"
 
-// only server sending
-const val LOCALDIRECT_ACCEPT = "com.localdirect.accept"
+    const val LOCALDIRECT_MOUSE_LEFT = "com.localdirect.mouse.left"
+}
 
-// only client sending
-const val LOCALDIRECT_ESTABLISH = "com.localdirect.establish"
+/**
+ * Constants that only sending from server to client
+ */
+object ServerConsts {
+    const val LOCALDIRECT_ACCEPT = "com.localdirect.accept"
+    const val LOCALDIRECT_TERMINAL = "com.localdirect.terminal"
+}
