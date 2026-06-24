@@ -3,17 +3,17 @@ package com.localdirect.ui.screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.localdirect.core.UiState
 import com.localdirect.core.data.IpAddress
-import com.localdirect.ui.components.LocalDirectAppBar
+import com.localdirect.ui.components.MainAppBar
+import com.localdirect.ui.components.MainScreenConnected
 import com.localdirect.ui.components.MainScreenIdle
+import com.localdirect.ui.components.MainScreenSearching
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -27,7 +27,7 @@ fun MainScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { LocalDirectAppBar(onSettingsButtonClick = onSettingsButtonClick) }
+        topBar = { MainAppBar(onSettingsButtonClick = onSettingsButtonClick) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -40,13 +40,11 @@ fun MainScreen(
                 }
 
                 UiState.SEARCHING -> {
-                    Text(text = "Searching for server...")
-                    CircularProgressIndicator()
+                    MainScreenSearching()
                 }
 
                 UiState.CONNECTED -> {
-                    val ipAddress by serverIpFlow.collectAsStateWithLifecycle()
-                    Text(text = "Connected with $ipAddress")
+                    MainScreenConnected(serverIpFlow = serverIpFlow)
                 }
             }
         }

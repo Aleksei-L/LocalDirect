@@ -6,26 +6,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.localdirect.ui.LocalDirectTheme
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
+import com.localdirect.ui.components.SettingsAppBar
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     onBackButtonClick: () -> Unit
 ) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = { SettingsAppBar(onBackButtonClick = onBackButtonClick) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Text(text = "This is settings")
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SettingsScreenPreview() {
     LocalDirectTheme {
-        LaunchedEffect(Unit) {
-            delay(1.seconds)
-            onBackButtonClick()
-        }
-        Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-                Text("This is settings")
-            }
-        }
+        SettingsScreen { }
     }
 }

@@ -3,4 +3,8 @@
 
     <!-- Main screen - IDLE state -->
     <string name="search_server_button">Search for a server</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="back_button_desc">Back</string>
 </resources>

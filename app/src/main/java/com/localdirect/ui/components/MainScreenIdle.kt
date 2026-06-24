@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.localdirect.R
+import com.localdirect.ui.LocalDirectTheme
 
 @Composable
 fun MainScreenIdle(
@@ -35,5 +37,13 @@ fun MainScreenIdle(
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = stringResource(R.string.search_server_button))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenIdlePreview() {
+    LocalDirectTheme {
+        MainScreenIdle {}
     }
 }

@@ -9,7 +9,7 @@ object UiStateRepository {
     val uiStateFlow = mUiStateFlow.asStateFlow()
 
     fun emitUiState(uiState: UiState) {
-        Timber.i("UI state update: oldState=${uiStateFlow.value}, newValue=$uiState")
+        Timber.i("UI state update: oldState=${uiStateFlow.value}, newState=$uiState")
         mUiStateFlow.value = uiState
     }
 }

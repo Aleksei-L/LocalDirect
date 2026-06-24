@@ -21,9 +21,9 @@ import com.localdirect.ui.LocalDirectTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocalDirectAppBar(
+fun SettingsAppBar(
     modifier: Modifier = Modifier,
-    onSettingsButtonClick: () -> Unit
+    onBackButtonClick: () -> Unit
 ) {
     TopAppBar(
         modifier = modifier,
@@ -31,19 +31,21 @@ fun LocalDirectAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
+        navigationIcon = {
+            IconButton(onClick = onBackButtonClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_back),
+                    contentDescription = stringResource(R.string.back_button_desc)
+                )
+            }
+        },
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = stringResource(R.string.app_name))
-                IconButton(onClick = onSettingsButtonClick) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_settings),
-                        contentDescription = null
-                    )
-                }
+                Text(text = stringResource(R.string.settings_title))
             }
         }
     )
@@ -51,8 +53,8 @@ fun LocalDirectAppBar(
 
 @Preview
 @Composable
-private fun LocalDirectAppBarPreview() {
+private fun SettingsAppBarPreview() {
     LocalDirectTheme {
-        LocalDirectAppBar { }
+        SettingsAppBar {}
     }
 }
